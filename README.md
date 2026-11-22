@@ -46,7 +46,14 @@ scripts/
 
 ## Score history (bonus)
 
-Finished games are saved to **Firebase Firestore** in the `gameHistory` collection. To turn it on, paste your Firebase web config into `src/firebase/firebaseConfig.js`. Until then, history is saved on the device with AsyncStorage.
+Finished games are saved to **Firebase Firestore** in the `gameHistory` collection, and the **Score history** screen lists them with wins, win rate and best score.
+
+- Config: `src/firebase/firebaseConfig.js`
+- Saving and loading: `src/services/historyService.js`
+- Security rules: `firestore.rules` (allow reading and adding results; block edits and deletes)
+- Connection test: `npm run test:firebase`
+
+If Firebase can't be reached (for example, no internet), the result is saved on the device with AsyncStorage and still shows on the history screen.
 
 ## Packages
 

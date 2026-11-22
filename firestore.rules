@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Security rules for the score history.
+// Paste into Firebase console → Firestore Database → Rules → Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /gameHistory/{gameId} {
+      // The history screen reads past games.
+      allow read: if true;
+
+      // A finished game can be saved, but only with the expected fields and sensible values.
+      allow create: if request.resource.data.keys().hasAll(['deviceId', 'playerName', 'won', 'playedAt', 'scores'])
+        && request.resource.data.deviceId is string
+        && request.resource.data.playerName is string
+        && request.resource.data.playerName.size() <= 20
+        && request.resource.data.won is bool
+        && request.resource.data.playedAt is number
+        && request.resource.data.scores is list
+        && request.resource.data.scores.size() <= 6;
+
+      // Saved results can't be edited or deleted.
+      allow update, delete: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
