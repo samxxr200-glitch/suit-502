@@ -70,6 +70,10 @@ If Firebase can't be reached (for example, no internet), the result is saved on 
 npm run simulate
 ```
 
+## Gameplay video
+
+[Watch the gameplay recording](demo/suit502-gameplay.mp4): a full game against 3 bots, from setup to game over, then the score history.
+
 ## Screenshots
 
 | Home | Game table | Jack: pick a suit |
