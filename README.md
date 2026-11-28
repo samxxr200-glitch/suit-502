@@ -20,6 +20,8 @@ Scan the QR code with **Expo Go** on your phone. The phone and computer must be 
 - **Jack**: wild. You choose the next suit.
 - **7♥**: wild. Playing it wins the round instantly.
 - Cards left in your hand at the end of a round become points. Reach **502** and you are out. The last player standing wins.
+- Going out on a 2 or A♠ still makes the next player take the penalty. A 7♥ winner still scores the cards left in hand.
+- Whoever scored the fewest points in a round starts the next one.
 
 ## Project structure
 

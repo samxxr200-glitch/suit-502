@@ -87,7 +87,22 @@ t = gameReducer(t, { type: 'PLAY', player: 0, cardId: 'JC', suit: 'D' });
 assert(t.activeSuit === 'D', 'jack sets suit', t);
 t = gameReducer(t, { type: 'PLAY', player: 1, cardId: '7H' });
 assert(t.phase === 'roundOver' && t.roundResult.winnerIndex === 1, '7H wins round', t);
-assert(t.players[0].score === 5 && t.players[1].score === 0, '5C = 5 pts, winner 0', t);
+assert(t.players[0].score === 5 && t.players[1].score === 110, '5C = 5 pts; 7H winner still scores A♠ + K♦ = 110', t);
+// Fewest points last round starts next, even if they did not win it
+t = gameReducer(t, { type: 'NEXT_ROUND' });
+assert(t.current === 0, 'player with fewest round points starts next round', t);
+
+// Going out on a 2: the next player still takes +2 before scoring
+t = mk({ hands: [[C('2H')], [C('9D')]], discardPile: [C('6H')], activeSuit: 'H', current: 0, pending: null });
+t = gameReducer(t, { type: 'PLAY', player: 0, cardId: '2H' });
+assert(t.phase === 'roundOver' && t.players[1].hand.length === 3, 'last-card 2 still gives +2', t);
+t = gameReducer(t, { type: 'NEXT_ROUND' });
+assert(t.current === 0, 'player who went out (0 pts) starts next round', t);
+
+// Going out on A♠: the next player still takes +5
+t = mk({ hands: [[C('AS')], [C('9D')]], discardPile: [C('6S')], activeSuit: 'S', current: 0, pending: null });
+t = gameReducer(t, { type: 'PLAY', player: 0, cardId: 'AS' });
+assert(t.phase === 'roundOver' && t.players[1].hand.length === 6, 'last-card A♠ still gives +5', t);
 
 // Not your turn → ignored
 assert(gameReducer(base, { type: 'DRAW', player: 1 }) === base, 'out-of-turn draw ignored', base);

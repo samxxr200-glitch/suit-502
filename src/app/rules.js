@@ -31,13 +31,15 @@ const SECTIONS = [
       'A♥, A♦, A♣: 20 each',
       '10, Q, K: 10 each',
       '3–6, 9 and other 7s: 5 each',
-      'The round winner scores 0.',
+      'Going out leaves you with 0. A 7♥ winner still scores the cards left in hand.',
     ],
   },
   {
     title: 'Winning',
     lines: [
       'A round ends when someone plays their last card or plays the 7♥.',
+      'If the last card is a 2 or A♠, the next player still takes the penalty before scoring.',
+      'Whoever scored the fewest points in a round starts the next one.',
       'After each round, anyone at 502 or more is eliminated. The round winner is always safe that round.',
       'The last player under 502 wins. If everyone crosses 502 in the same round, the lowest total wins.',
     ],

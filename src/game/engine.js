@@ -119,7 +119,9 @@ function dealRound(prev, starterIndex) {
 function endRound(s, winnerIndex, reason) {
   const results = s.players.map((p, i) => {
     const wasActive = !p.eliminated;
-    const points = !wasActive || i === winnerIndex ? 0 : handPoints(p.hand);
+    // Everyone still in scores the cards left in hand. The winner too: going out leaves 0 cards,
+    // but a 7♥ winner still counts whatever they are holding.
+    const points = wasActive ? handPoints(p.hand) : 0;
     return { id: p.id, name: p.name, points, cardsLeft: p.hand.length, wasActive };
   });
 
@@ -169,12 +171,28 @@ export function gameReducer(state, action) {
       return acceptSkip(state, action);
     case 'NEXT_ROUND':
       if (state.phase !== 'roundOver') return state;
-      return dealRound(state, nextActiveIndex(state, state.starter));
+      return dealRound(state, nextRoundStarter(state));
     case 'RESTART':
       return createGame(state.setup);
     default:
       return state;
   }
+}
+
+/**
+ * The player who scored the fewest points last round starts the next one.
+ * Ties go to the round winner, then to the first tied player clockwise from the winner.
+ */
+function nextRoundStarter(state) {
+  const { winnerIndex, results } = state.roundResult;
+  const n = state.players.length;
+  let best = null;
+  for (let step = 0; step < n; step++) {
+    const i = (winnerIndex + step) % n;
+    if (state.players[i].eliminated) continue;
+    if (best === null || results[i].points < results[best].points) best = i;
+  }
+  return best ?? nextActiveIndex(state, state.starter);
 }
 
 function isTurnOf(state, playerIndex) {
@@ -211,14 +229,26 @@ function playCard(state, { player, cardId, suit }) {
     s.activeSuit = card.suit;
   }
 
-  if (me.hand.length === 0) {
-    s.message = `${me.name} played ${cardLabel(card)} and went out!`;
-    return endRound(s, player, 'out');
-  }
-
   const next = nextActiveIndex(s, player);
   const nextName = s.players[next].name;
   const prevPending = s.pending;
+
+  if (me.hand.length === 0) {
+    s.message = `${me.name} played ${cardLabel(card)} and went out!`;
+    // Going out on a 2 or an Ace penalty: the next player must still take it before scoring,
+    // with no chance to answer.
+    let penalty = 0;
+    if (card.rank === '2') {
+      penalty = (prevPending?.type === 'draw2' ? prevPending.amount : 0) + TWO_PENALTY;
+    } else if (isAceOfSpades(card) || (card.rank === 'A' && prevPending?.type === 'ace')) {
+      penalty = ACE_PENALTY;
+    }
+    if (penalty > 0 && next !== player) {
+      const got = drawCards(s, next, penalty);
+      s.message += ` ${nextName} still takes +${got}.`;
+    }
+    return endRound(s, player, 'out');
+  }
 
   if (card.rank === '2') {
     const amount = (prevPending?.type === 'draw2' ? prevPending.amount : 0) + TWO_PENALTY;
