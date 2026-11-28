@@ -69,3 +69,13 @@ If Firebase can't be reached (for example, no internet), the result is saved on 
 ```bash
 npm run simulate
 ```
+
+## Screenshots
+
+| Home | Game table | Jack: pick a suit |
+|---|---|---|
+| ![Home](screenshots/01-home.png) | ![Game table](screenshots/04-game-table.png) | ![Suit picker](screenshots/05-suit-picker.png) |
+| **Skip penalty** | **Round summary** | **Game over** |
+| ![Penalty](screenshots/06-penalty.png) | ![Round summary](screenshots/07-round-summary.png) | ![Game over](screenshots/08-game-over.png) |
+| **New game** | **How to play** | **Score history** |
+| ![Setup](screenshots/03-setup.png) | ![Rules](screenshots/02-rules.png) | ![History](screenshots/09-score-history.png) |
